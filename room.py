@@ -1,3 +1,47 @@
+from gamemap import
+
+def autogen_room(height, width, exit_top, exit_right):
+    room_map = []
+    temprow = []
+
+    temprow=[1]*width
+    room_map.append(temprow)
+
+    for j in range(height-2):
+        temprow = []
+        temprow.append(1)
+
+        for i in range(width-2):
+            temprow.append(0)
+
+        temprow.append(1)
+        room_map.append(temprow)
+
+    temprow = []
+    temprow = [1]*width
+    room_map.append(temprow)
+
+    if exit_top:
+
+        room_map[0][int(width/2)] = 0
+
+    if exit_right:
+        print(room_map)
+        room_map[int(height/2)][width-1] = 0
+
+    return room_map
+
+#TEST
+room = autogen_room(7,18, True, True)
+print(room)
+temprow=""
+
+for row in range(len(room)):
+    for col in range(len(room[row])):
+        temprow = temprow + str(room[row][col])
+    print(temprow)
+    temprow=""
+
 room = [
 [1,1,1,1,1],
 [1,0,0,0,1],
