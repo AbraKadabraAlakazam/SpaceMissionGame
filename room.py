@@ -1,56 +1,65 @@
-from gamemap import
+from pgzero.builtins import *
+from gamemap import *
+from objects import *
+from scenery import *
 
 def autogen_room(height, width, exit_top, exit_right):
+    global room_map
+    global room_number
+    room_map = []
+
+    #check tile
+    floor_object = 0
+    bottom_edge = 1
+    side_edge = 1
+    if room_number < 26:
+        floor_object  =2
+    if room_number in range(1,21):
+        bottom_edge=2
+        side_edge=2
+    if room_number in range(21,26):
+        side_edge=2
+
+
+    #everything else that i forgot to organize
     room_map = []
     temprow = []
 
-    temprow=[1]*width
+    temprow=[side_edge]*width
     room_map.append(temprow)
 
     for j in range(height-2):
         temprow = []
-        temprow.append(1)
+        temprow.append(side_edge)
 
         for i in range(width-2):
-            temprow.append(0)
+            temprow.append(floor_object)
 
-        temprow.append(1)
+        temprow.append(side_edge)
         room_map.append(temprow)
 
     temprow = []
-    temprow = [1]*width
+    temprow = [bottom_edge]*width
     room_map.append(temprow)
+
 
     if exit_top:
 
-        room_map[0][int(width/2)] = 0
+        room_map[0][int(width/2)] = floor_object
 
     if exit_right:
         print(room_map)
-        room_map[int(height/2)][width-1] = 0
+        room_map[int(height/2)][width-1] = floor_object
 
     return room_map
 
 #TEST
-room = autogen_room(7,18, True, True)
-print(room)
+
 temprow=""
 
-for row in range(len(room)):
-    for col in range(len(room[row])):
-        temprow = temprow + str(room[row][col])
-    print(temprow)
-    temprow=""
 
-room = [
-[1,1,1,1,1],
-[1,0,0,0,1],
-[1,0,1,0,1],
-[1,0,0,0,1],
-[1,0,0,0,1],
-[1,0,0,0,1],
-[1,1,1,1,1]
-]
+
+roommap = []
 
 WIDTH = 800
 HEIGHT = 600
@@ -58,15 +67,22 @@ HEIGHT = 600
 top_left_x = 100
 top_left_y = 150
 
-OBJECT_LIST = [images.floor, images.pillar]
+OBJECT_LIST = [images.floor, images.pillar, images.soil]
 
-room_height = 7
-room_width = 5
+room_height = 0
+room_width = 0
+
+room_number = 1
+room_height  = GAME_MAP[room_number][1]
+room_width = GAME_MAP[room_number][2]
+room_topExit = GAME_MAP[room_number][3]
+room_rightExit = GAME_MAP[room_number][4]
+roommap = autogen_room(room_height, room_width, room_topExit, room_rightExit)
 
 def draw():
     for y in range(room_height):
         for x in range(room_width):
-            item = room[y][x]
+            item = roommap[y][x]
 
             drawimg = OBJECT_LIST[item]
 

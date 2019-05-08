@@ -1,3 +1,5 @@
+from pgzero.builtins import *
+
 WIDTH = 800
 HEIGHT = 600
 
@@ -9,7 +11,7 @@ def draw():
     screen.blit(images.mars ,(50,50))
     screen.blit(images.astronaut, (playerx, playery))
     screen.blit(images.ship, (550, 300))
-    
+
 def game_loop():
     global playerx, playery
 
@@ -21,6 +23,6 @@ def game_loop():
         playery -= 5
     elif keyboard.down:
         playery += 5
-   
-   
+
+
 clock.schedule_interval(game_loop, 0.03)
