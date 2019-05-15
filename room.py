@@ -2,6 +2,40 @@ from pgzero.builtins import *
 from gamemap import *
 from objects import *
 from scenery import *
+from player import *
+
+#Test
+
+TITLE_SIZE = 30
+
+temprow=""
+
+
+
+roommap = []
+
+WIDTH = 800
+HEIGHT = 600
+
+top_left_x = 100
+top_left_y = 150
+
+OBJECT_LIST = objects
+
+room_height = 0
+room_width = 0
+
+#Functions
+def draw():
+    for y in range(room_height):
+        for x in range(room_width):
+            item = roommap[y][x]
+            if item != 255:
+
+
+                drawimg = OBJECT_LIST[item][0]
+
+                screen.blit(drawimg, (top_left_x + x*30, top_left_y  + y*30 - drawimg.get_height()))
 
 def autogen_room(height, width, exit_top, exit_right):
     global room_map
@@ -48,42 +82,31 @@ def autogen_room(height, width, exit_top, exit_right):
         room_map[0][int(width/2)] = floor_object
 
     if exit_right:
-        print(room_map)
+    #print(room_map)
         room_map[int(height/2)][width-1] = floor_object
+
+    #inset scenery
+    if room_number in scenery:
+        for scenery_item in scenery[room_number]:
+            scenery_num = scenery_item[0]
+            scenery_y = scenery_item[1]
+            scenery_x = scenery_item[2]
+            room_map[scenery_y][scenery_x] = scenery_num
+
+            image_here = objects[scenery_num][0]
+            image_width = image_here.get_width()
+            image_width_in_tiles = int(image_width / TITLE_SIZE)
+
+            for tile_number in range(1, image_width_in_tiles):
+                room_map[scenery_y][scenery_x+tile_number] = 255
+
 
     return room_map
 
-#TEST
 
-temprow=""
-
-
-
-roommap = []
-
-WIDTH = 800
-HEIGHT = 600
-
-top_left_x = 100
-top_left_y = 150
-
-OBJECT_LIST = [images.floor, images.pillar, images.soil]
-
-room_height = 0
-room_width = 0
-
-room_number = 1
+room_number = 47
 room_height  = GAME_MAP[room_number][1]
 room_width = GAME_MAP[room_number][2]
 room_topExit = GAME_MAP[room_number][3]
 room_rightExit = GAME_MAP[room_number][4]
 roommap = autogen_room(room_height, room_width, room_topExit, room_rightExit)
-
-def draw():
-    for y in range(room_height):
-        for x in range(room_width):
-            item = roommap[y][x]
-
-            drawimg = OBJECT_LIST[item]
-
-            screen.blit(drawimg, (top_left_x + x*30, top_left_y  + y*30 - drawimg.get_height()))
