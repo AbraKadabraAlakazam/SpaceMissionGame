@@ -44,6 +44,8 @@ def draw_player():
 
 #Functions
 def draw():
+    box = Rect((0,0), (WIDTH, HEIGHT))
+    screen.draw.filled_rect(box, (0,0,0))
     for y in range(room_height):
         for x in range(room_width):
             item = roommap[y][x]
@@ -59,12 +61,17 @@ def draw():
 def autogen_room():
     global room_map
     global room_number
+    global room_height, room_width
+
 
     height  = GAME_MAP[room_number][1]
     width = GAME_MAP[room_number][2]
     exit_top = GAME_MAP[room_number][3]
     exit_right = GAME_MAP[room_number][4]
     room_map = []
+
+    room_height = height
+    room_width = width
 
     #check tile
     floor_object = 0
@@ -102,12 +109,31 @@ def autogen_room():
 
 
     if exit_top:
-
+        room_map[0][int(width/2)-1] = floor_object
         room_map[0][int(width/2)] = floor_object
+        room_map[0][int(width/2)+1] = floor_object
 
     if exit_right:
     #print(room_map)
-        room_map[int(height/2)][width-1] = floor_object
+        room_map[int(height/2)-1][width-1] = floor_object
+        room_map[0][int(width/2)] = floor_object
+        room_map[0][int(width/2)+1] = floor_object
+
+    #Do we need a left exit?
+    if room_number % MAP_WIDTH != 1: # We are not on the left edge of the map
+        #check room_number - 1 for the right exit
+        if GAME_MAP[room_number -1][4]: # then it is true there is an exit
+            room_map[int(height/2)-1][0] = floor_object
+            room_map[int(height/2)][0] = floor_object
+            room_map[int(height/2)+1][0] = floor_object
+
+
+    if room_number <= (MAP_WIDTH*(MAP_HEIGHT-1)): #this is the bottom edge
+        if GAME_MAP[room_number + MAP_WIDTH][3]: #this is the top exit
+            room_map[room_height-1][int(room_width/2)-1] = floor_object
+            room_map[room_height-1][int(room_width/2)] = floor_object
+            room_map[room_height-1][int(room_width/2)+1] = floor_object
+
 
     #inset scenery
     if room_number in scenery:
@@ -130,7 +156,7 @@ def autogen_room():
 def gameloop():
     global player_x, player_y, playerDirection, playerFrame
     global oldPlayerX, oldPlayerY, playerOffsetX, playerOffsetY
-    global room_number
+    global room_number, roommap
 
     #Before moving, store current pos
     oldPlayerX = player_x
@@ -173,15 +199,35 @@ def gameloop():
             playerOffsetY = 0
 
     #Check for exitng the room_height
-    if player_x == room_width: #door on the RIIIIGIITHHt
+    if player_x == room_width:#Door on right
         room_number += 1
-        autogen_room()
+        roommap = autogen_room()
         player_x = 0 #enter at the left
         player_y = int(room_height/2)
         playerFrame = 0
         return
         #START HERE MEXT WEEK
-
+    if player_x == -1:#Door on left
+        room_number -= 1
+        roommap = autogen_room()
+        player_x = room_width-1 #enter at the right
+        player_y = int(room_height/2)
+        playerFrame = 0
+        return
+    if player_y == -1:#Door on up
+        room_number -= MAP_WIDTH
+        roommap = autogen_room()
+        player_x = int(room_width/2)#enter in the middle
+        player_y = room_height-1
+        playerFrame = 0
+        return
+    if player_y == room_height:#Door on down
+        room_number += MAP_WIDTH
+        roommap = autogen_room()
+        player_x = int(room_width/2)#enter in the middle
+        player_y = 0
+        playerFrame = 0
+        return
 
 
     #Dont walk throught things
